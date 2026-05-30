@@ -1,0 +1,75 @@
+package com.example.wseety.google;
+
+
+import com.example.wseety.ApiResponse;
+import com.example.wseety.auth.AuthenticationService;
+import com.example.wseety.config.JwtService;
+import com.example.wseety.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/auth")
+public class GoogleController {
+
+    @Autowired
+    private GoogleAuthService googleAuthService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @PostMapping("/google")
+    public ResponseEntity<?> googleAuth(  @RequestBody Map<String, String> request) {
+
+            String idToken = request.get("id_token");
+
+            if (idToken == null || idToken.isEmpty()) {
+
+
+                return ResponseEntity.badRequest().body( ApiResponse.<Void>builder()
+                        .success(false)
+                        .message("login failed")
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .build());
+            }
+            GoogleUser googleUser = googleAuthService.verifyIdToken(idToken);
+
+//            User user = userService.findOrCreateUser(googleUser);
+//            String jwtToken = this.jwtService.generateToken(user , false);
+//            String refreshToken = this.jwtService.generateRefreshToken(user) ;
+//
+//            this.authenticationService.revokeAllUserTokens(user);
+//            this.authenticationService.saveUserToken(user, jwtToken);
+//            AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().
+//            accessToken(jwtToken). refreshToken(refreshToken).verified(true) .build();
+//
+
+            return ResponseEntity.ok(
+
+                    ApiResponse.builder()
+                            .success(true)
+                            .data(null)//authenticationResponse
+                            .message("login successfully")
+                            .status(HttpStatus.OK.value())
+                            .build()
+
+
+            );
+
+
+    }
+}
+

@@ -1,0 +1,33 @@
+package com.example.wseety.user.dto;
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.UUID;
+
+@Data
+@Builder
+public class UserPublicProfileResponse {
+    private UUID id;
+    private String firstname;
+    private String lastname;
+
+    private String bio;
+    private String whatsappLink;
+    private String facebookLink;
+    private String telegramLink;
+    private String linkedinLink;
+
+    private String imagePath;
+    private String role;
+
+    private String email;
+
+    private int postsCount;
+    private int followersCount;
+    private int followingCount;
+
+
+    private boolean isMyProfile;
+
+    private boolean isFollowing;
+}
