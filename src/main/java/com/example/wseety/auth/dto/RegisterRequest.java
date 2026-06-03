@@ -17,11 +17,18 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
 
   @NotBlank(message = "firstname required")
+  @Pattern(
+          regexp = "^[\\p{L} ]+$",
+          message = "must contain only letters"
+  )
   private String firstname;
 
   @NotBlank(message = "lastname required")
+  @Pattern(
+          regexp = "^[\\p{L} ]+$",
+          message = "must contain only letters"
+  )
   private String lastname;
-
 
   @Email(message = "Email must be valid")
   @NotBlank(message = "Email required")

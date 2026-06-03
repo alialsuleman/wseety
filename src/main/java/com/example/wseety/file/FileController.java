@@ -1,7 +1,11 @@
 package com.example.wseety.file;
 
 
+import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -10,48 +14,42 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@PreAuthorize("hasAnyRole('ADMIN','MANAGER', 'USER')")
 @RequestMapping("/files")
+@RequiredArgsConstructor
 public class FileController {
 
-    @Autowired
-    private FileStorageService fileStorageService;
+    private final FileStorageService fileStorageService;
 
-
-    //
     @PostMapping("/upload")
-    public ResponseEntity<List<String>> uploadFiles(
-            @RequestParam("files") List<MultipartFile> files
-    ) throws IOException {
-        List<String> storedFiles = fileStorageService.saveFiles(files);
-        return ResponseEntity.ok(storedFiles);
+    public ResponseEntity<String> upload(@RequestParam MultipartFile file,
+                                         @RequestParam(required = false) String folder) {
+        String path = fileStorageService.uploadFile(file, folder);
+        return ResponseEntity.ok(path);
     }
 
+    @PostMapping("/upload/image")
+    public ResponseEntity<String> uploadImage(@RequestParam MultipartFile file,
+                                              @RequestParam(required = false) String folder) {
+        String path = fileStorageService.uploadImage(file, folder);
+        return ResponseEntity.ok(path);
+    }
 
+    @GetMapping("/download")
+    public ResponseEntity<Resource> download(@RequestParam String path) {
+        Map<String, Object> meta = fileStorageService.downloadFileWithMeta(path);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType((String) meta.get("contentType")))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + meta.get("fileName") + "\"")
+                .body((Resource) meta.get("resource"));
+    }
 
-    // حذف صورة
-//    @DeleteMapping("/deletepostimage/{id}")
-//    public ResponseEntity<ApiResponse> deleteFile(@PathVariable Integer id) {
-//        System.out.println(id);
-//        boolean deleted = fileStorageService.deleteFile(id);
-//
-//        ApiResponse response = ApiResponse.builder()
-//                .success(true)
-//                .message("created successfully")
-//                .timestamp(LocalDateTime.now())
-//                .status(HttpStatus.OK.value())
-//                .data (null)
-//                .build();
-//
-//        if (deleted) {
-//            response.setMessage("Deleted successfully");
-//            return ResponseEntity.ok(response);
-//        } else {
-//            response.setMessage("File not found");
-//            response.setStatus(HttpStatus.BAD_REQUEST.value());
-//            return ResponseEntity.badRequest().body(response);
-//        }
-//    }
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> delete(@RequestParam String path) {
+        fileStorageService.deleteFile(path);
+        return ResponseEntity.noContent().build();
+    }
 }
