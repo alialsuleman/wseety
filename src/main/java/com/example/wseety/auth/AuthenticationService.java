@@ -119,7 +119,7 @@ public class AuthenticationService {
     var jwtToken = jwtService.generateToken(user , false);
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
-    saveUserToken(user, jwtToken);
+    saveUserToken(user, jwtToken , false);
     return AuthenticationResponse.builder()
         .accessToken(jwtToken)
             .refreshToken(refreshToken)
@@ -127,14 +127,32 @@ public class AuthenticationService {
         .build();
   }
 
+
+  public AuthenticationResponse changePasswordToken (String email)
+  {
+      var user = repository.findByEmail(email)
+              .orElseThrow();
+
+      var jwtToken = jwtService.generateToken(user , true);
+      revokeAllUserTokens(user);
+      saveUserToken(user, jwtToken , true);
+      return AuthenticationResponse.builder()
+              .accessToken(jwtToken)
+              .refreshToken(null)
+              .verified(user.isEnabled())
+              .build();
+
+  }
+
   // create token
-  public void saveUserToken(User user, String jwtToken) {
+  public void saveUserToken(User user, String jwtToken ,boolean resetPassword) {
     var token = Token.builder()
         .user(user)
         .token(jwtToken)
         .tokenType(TokenType.BEARER)
         .expired(false)
         .revoked(false)
+        .resetPassword(resetPassword)
         .build();
     tokenRepository.save(token);
   }
@@ -165,7 +183,7 @@ public class AuthenticationService {
     if (!jwtService.isTokenValid(refreshToken, user)) throw new BadRequestException("the refreshToken invalid") ;
     var accessToken = jwtService.generateToken(user ,false);
     revokeAllUserTokens(user);
-    saveUserToken(user, accessToken);
+    saveUserToken(user, accessToken, false);
     var authResponse = AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -194,7 +212,7 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user , false);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
+        saveUserToken(user, jwtToken , false);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)

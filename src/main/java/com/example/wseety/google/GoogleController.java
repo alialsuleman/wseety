@@ -3,8 +3,10 @@ package com.example.wseety.google;
 
 import com.example.wseety.ApiResponse;
 import com.example.wseety.auth.AuthenticationService;
+import com.example.wseety.auth.dto.AuthenticationResponse;
 import com.example.wseety.config.JwtService;
 import com.example.wseety.user.UserService;
+import com.example.wseety.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,40 +36,42 @@ public class GoogleController {
     @PostMapping("/google")
     public ResponseEntity<?> googleAuth(  @RequestBody Map<String, String> request) {
 
-            String idToken = request.get("id_token");
+        String idToken = request.get("id_token");
 
-            if (idToken == null || idToken.isEmpty()) {
-
-
-                return ResponseEntity.badRequest().body( ApiResponse.<Void>builder()
-                        .success(false)
-                        .message("login failed")
-                        .status(HttpStatus.BAD_REQUEST.value())
-                        .build());
-            }
-            GoogleUser googleUser = googleAuthService.verifyIdToken(idToken);
-
-//            User user = userService.findOrCreateUser(googleUser);
-//            String jwtToken = this.jwtService.generateToken(user , false);
-//            String refreshToken = this.jwtService.generateRefreshToken(user) ;
-//
-//            this.authenticationService.revokeAllUserTokens(user);
-//            this.authenticationService.saveUserToken(user, jwtToken);
-//            AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().
-//            accessToken(jwtToken). refreshToken(refreshToken).verified(true) .build();
-//
-
-            return ResponseEntity.ok(
-
-                    ApiResponse.builder()
-                            .success(true)
-                            .data(null)//authenticationResponse
-                            .message("login successfully")
-                            .status(HttpStatus.OK.value())
-                            .build()
+        if (idToken == null || idToken.isEmpty()) {
 
 
-            );
+            return ResponseEntity.badRequest().body( ApiResponse.<Void>builder()
+                    .success(false)
+                    .message("login failed")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .build());
+        }
+        GoogleUser googleUser = googleAuthService.verifyIdToken(idToken);
+
+        User user = userService.findOrCreateGoogleUser(googleUser);
+        String jwtToken = this.jwtService.generateToken(user , false);
+        String refreshToken = this.jwtService.generateRefreshToken(user) ;
+
+        this.authenticationService.revokeAllUserTokens(user);
+        this.authenticationService.saveUserToken(user, jwtToken  , false);
+
+
+        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().
+                accessToken(jwtToken). refreshToken(refreshToken).verified(true) .build();
+
+
+        return ResponseEntity.ok(
+
+                ApiResponse.builder()
+                        .success(true)
+                        .data(authenticationResponse)
+                        .message("login successfully")
+                        .status(HttpStatus.OK.value())
+                        .build()
+
+
+        );
 
 
     }

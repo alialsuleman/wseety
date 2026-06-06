@@ -32,6 +32,8 @@ public class Token {
 
   public boolean expired;
 
+  @Builder.Default
+  private boolean resetPassword= false  ;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")

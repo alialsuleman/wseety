@@ -42,7 +42,13 @@ public class OtpController {
     public ResponseEntity<ApiResponse<?>> checkOtp(@Valid @RequestBody CheckOtpRequest request) throws TooManyListenersException {
 
         CheckOtpResponse checkOtpResponse = otpService.checkOtp(request) ;
-        AuthenticationResponse authenticationResponse = authenticationService.createJwtResponse(request.getEmail()) ;
+
+        AuthenticationResponse authenticationResponse =
+                request.getType() == OtpType.PASSWORD_RESET ?
+                        authenticationService.changePasswordToken(request.getEmail())
+                        :
+                        authenticationService.createJwtResponse(request.getEmail()) ;
+
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
