@@ -1,13 +1,17 @@
-package com.example.wseety.identityVerification.service;
+package com.example.wseety.identityVerification.verificationDocument.service;
 
 import com.example.wseety.exceptionHandler.exception.BadRequestException;
 import com.example.wseety.exceptionHandler.exception.ConflictException;
+import com.example.wseety.exceptionHandler.exception.ForbiddenException;
 import com.example.wseety.exceptionHandler.exception.UnauthorizedException;
 import com.example.wseety.file.FileStorageService;
-import com.example.wseety.identityVerification.entity.DocumentType;
-import com.example.wseety.identityVerification.entity.VerificationDocument;
-import com.example.wseety.identityVerification.entity.VerificationDocumentRepository;
-import com.example.wseety.identityVerification.entity.VerificationStatus;
+import com.example.wseety.identityVerification.userVerificationStatus.UserVerficationStatusService;
+import com.example.wseety.identityVerification.userVerificationStatus.UserVerificationStatus;
+import com.example.wseety.identityVerification.userVerificationStatus.UserVerificationStatusRepository;
+import com.example.wseety.identityVerification.verificationDocument.entity.DocumentType;
+import com.example.wseety.identityVerification.verificationDocument.entity.VerificationDocument;
+import com.example.wseety.identityVerification.verificationDocument.entity.VerificationDocumentRepository;
+import com.example.wseety.identityVerification.verificationDocument.entity.VerificationStatus;
 import com.example.wseety.user.entity.Role;
 import com.example.wseety.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,11 @@ public class IdentityVerificationService {
 
     private final FileStorageService fileStorageService;
     private final VerificationDocumentRepository documentRepository;
+    private final UserVerificationStatusRepository userVerificationStatusRepository ;
+    private final UserVerficationStatusService userVerficationStatusService ;
+
+
+
 
     public VerificationDocument uploadIdentityDocument(
             MultipartFile file,
@@ -42,8 +51,15 @@ public class IdentityVerificationService {
         Optional<VerificationDocument> verificationDocument =
                 this.documentRepository.findByDocumentTypeAndUserId(documentType, userId) ;
 
-        if (verificationDocument.isPresent() )
+
+
+        if (verificationDocument.isPresent() &&   verificationDocument.get().getStatus()== VerificationStatus.REJECTED )
+        {
+            System.out.println("hi");
             deleteDocument(user,verificationDocument.get().getId() );
+        }
+        else if (verificationDocument.isPresent())
+            throw new ForbiddenException("You cannot delete a file while it is under review; please wait for the admin's response.");
 
         String subFolder = "private/identity/" + userId;
         String storedPath = fileStorageService.uploadFile(file, subFolder);
@@ -57,7 +73,10 @@ public class IdentityVerificationService {
                 .uploadedAt(LocalDateTime.now())
                 .build();
 
-        return documentRepository.save(doc);
+        VerificationDocument savedDocs = documentRepository.save(doc);
+        this.userVerficationStatusService.updateStatus(savedDocs.getId(), VerificationStatus.PENDING );
+
+        return savedDocs ;
     }
 
 
@@ -79,7 +98,7 @@ public class IdentityVerificationService {
                 this.documentRepository.findByIdAndUserId(documentId, user.getId())
                 .orElseThrow(() -> new RuntimeException("Document not found or access denied")) ;
 
-        if ( doc.getStatus() != VerificationStatus.PENDING) {
+        if ( doc.getStatus() == VerificationStatus.APPROVED ) {
             throw new ConflictException("Cannot delete a reviewed document") ;
         }
 

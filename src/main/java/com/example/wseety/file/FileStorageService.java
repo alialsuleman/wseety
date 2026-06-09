@@ -2,6 +2,9 @@ package com.example.wseety.file;
 
 
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -22,7 +25,9 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+
 public class FileStorageService {
+
 
     private final Path rootLocation;
 

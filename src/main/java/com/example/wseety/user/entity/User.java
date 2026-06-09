@@ -54,7 +54,8 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
-
+    private String countryCode ;
+    private String internationalPhoneNumber ;
 
     // ─────────────────────────────────────────────
     //  Relations

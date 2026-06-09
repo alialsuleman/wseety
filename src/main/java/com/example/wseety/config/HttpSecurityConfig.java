@@ -31,7 +31,7 @@ public class HttpSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-    private final LogoutHandler logoutHandler;
+    private final LogoutService LogoutService;
     private final ObjectMapper objectMapper; // inject it as a Bean, don't create it manually every time
 
     @Bean
@@ -48,7 +48,7 @@ public class HttpSecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
-                        .addLogoutHandler(logoutHandler)
+                        .addLogoutHandler(LogoutService)
                         .logoutSuccessHandler((request, response, authentication) ->
                                 SecurityContextHolder.clearContext()
                         )

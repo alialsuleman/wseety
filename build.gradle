@@ -29,6 +29,11 @@ dependencies {
 
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+
+	implementation 'com.googlecode.libphonenumber:libphonenumber:9.0.8'
+	implementation 'com.neovisionaries:nv-i18n:1.29'
+
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 

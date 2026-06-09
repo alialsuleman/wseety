@@ -1,11 +1,12 @@
-package com.example.wseety.identityVerification.controller;
+package com.example.wseety.identityVerification.verificationDocument.controller;
 
 import com.example.wseety.ApiResponse;
 import com.example.wseety.file.FileStorageService;
-import com.example.wseety.identityVerification.entity.DocumentType;
-import com.example.wseety.identityVerification.service.IdentityVerificationService;
-import com.example.wseety.identityVerification.entity.VerificationDocument;
-import com.example.wseety.identityVerification.entity.VerificationDocumentRepository;
+import com.example.wseety.identityVerification.userVerificationStatus.UserVerficationStatusService;
+import com.example.wseety.identityVerification.verificationDocument.entity.DocumentType;
+import com.example.wseety.identityVerification.verificationDocument.service.IdentityVerificationService;
+import com.example.wseety.identityVerification.verificationDocument.entity.VerificationDocument;
+import com.example.wseety.identityVerification.verificationDocument.entity.VerificationDocumentRepository;
 import com.example.wseety.user.entity.User;
 import org.springframework.core.io.Resource ;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,11 +33,13 @@ public class IdentityVerificationController {
     private final VerificationDocumentRepository documentRepository;
     private final FileStorageService fileStorageService;
 
+    private final UserVerficationStatusService userVerficationStatusService;
+
     // -------------------------------------------------------
     // UserSection
     // -------------------------------------------------------
     @PostMapping("/upload")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<?>>  uploadDocument(
             @RequestParam MultipartFile file,
             @RequestParam DocumentType documentType,
@@ -49,7 +53,7 @@ public class IdentityVerificationController {
 
 
     @GetMapping("/document")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<?>> getDocument(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
@@ -61,22 +65,22 @@ public class IdentityVerificationController {
 
 
 
-    @DeleteMapping("/document/{documentId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteDocument(
-            @PathVariable Long documentId,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-
-        User user = ((User) userDetails);
-        this.verificationService.deleteDocument(user , documentId);
-
-        return ResponseEntity.ok(ApiResponse.accepted("The file was successfully deleted." , null ));
-    }
+//    @DeleteMapping("/document/{documentId}")
+//    @PreAuthorize("hasRole('USER')")
+//    public ResponseEntity<?> deleteDocument(
+//            @PathVariable Long documentId,
+//            @AuthenticationPrincipal UserDetails userDetails
+//    ) {
+//
+//        User user = ((User) userDetails);
+//        this.verificationService.deleteDocument(user , documentId);
+//
+//        return ResponseEntity.ok(ApiResponse.accepted("The file was successfully deleted." , null ));
+//    }
 
 
     @GetMapping("/document/{documentId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Resource> getDocument(
             @PathVariable Long documentId,
             @AuthenticationPrincipal UserDetails userDetails
@@ -93,6 +97,24 @@ public class IdentityVerificationController {
                 .header(HttpHeaders.PRAGMA, "no-cache")
                 .body((Resource) meta.get("resource"));
     }
+
+
+    @GetMapping("/status")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<?>> getStatus(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        User user = ((User) userDetails);
+
+        Map<String, Boolean > res = Map.of(
+              "isVerfied" ,   this.userVerficationStatusService.getUserDocStatus(user.getId())
+        ) ;
+
+        return  ResponseEntity.ok(ApiResponse.ok(res)) ;
+    }
+
+
 
 
 

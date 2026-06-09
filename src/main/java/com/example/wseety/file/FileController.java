@@ -2,6 +2,7 @@ package com.example.wseety.file;
 
 
 import jakarta.annotation.Resource;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/files")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class FileController {
 
     private final FileStorageService fileStorageService;

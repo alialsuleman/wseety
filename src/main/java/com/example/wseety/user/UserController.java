@@ -1,32 +1,18 @@
 package com.example.wseety.user ;
 
 import com.example.wseety.ApiResponse;
+import com.example.wseety.user.dto.AddPhoneNumberRequest;
 import com.example.wseety.user.dto.ChangePasswordRequest;
 import com.example.wseety.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -38,7 +24,8 @@ public class UserController {
 
     final private UserService userService ;
 
-    @PatchMapping
+
+    @PatchMapping("/changepassword")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<ApiResponse<?>> changePassword(
             @Valid @RequestBody ChangePasswordRequest changePasswordRequest,
@@ -53,6 +40,46 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.ok("your password has changed !  , please login again", null )) ;
     }
+
+    @PostMapping("/image")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<?>> updateUserImage (
+            @RequestParam("file") MultipartFile file ,
+            @AuthenticationPrincipal UserDetails userDetails
+    )
+    {
+        User user = ((User) userDetails);
+        this.userService.updateUserImage(user , file);
+        return ResponseEntity.ok(ApiResponse.ok("The user image has been successfully updated.")) ;
+    }
+
+
+    @DeleteMapping("/image")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<?>> deleteUserImage (
+            @AuthenticationPrincipal UserDetails userDetails
+    )
+    {
+        User user = ((User) userDetails);
+        this.userService.deleteUserImage(user);
+        return ResponseEntity.ok(ApiResponse.ok("The user image has been successfully deleted.")) ;
+    }
+
+
+
+    @PostMapping("/changephonenumber")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> addPhoneNumber(
+            @RequestBody AddPhoneNumberRequest addPhoneNumberRequest ,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        User user = ((User) userDetails);
+
+        this.userService.changePhoneNumber(user ,addPhoneNumberRequest) ;
+
+        return ResponseEntity.ok("");
+    }
+
 
 
 

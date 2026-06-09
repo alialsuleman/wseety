@@ -1,4 +1,4 @@
-package com.example.wseety.identityVerification.entity;
+package com.example.wseety.identityVerification.verificationDocument.entity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
