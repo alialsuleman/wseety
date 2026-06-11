@@ -125,6 +125,26 @@ public class UserService {
     }
 
 
+    // admin section ...
+    public List<User> getAllUsers ( )
+    {
+        return this.repository.findAll() ;
+    }
+
+    public User changeRolle (UUID userId)
+    {
+        User user =  this.repository.findById(userId).get();
+        if (user != null)
+        {
+            user.setRole(Role.ADMIN);
+            this.repository.save(user) ;
+        }
+        return user ;
+    }
+
+    ///////
+
+
 
     void changePhoneNumber (User user, AddPhoneNumberRequest addPhoneNumberRequest)
     {
@@ -149,5 +169,7 @@ public class UserService {
         String[] names = fullName.split(" ");
         return names.length > 1 ? names[names.length - 1] : "";
     }
+
+
 
 }

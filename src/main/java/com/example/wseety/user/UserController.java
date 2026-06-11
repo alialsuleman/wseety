@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/users")
@@ -80,6 +82,23 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
+
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<?>> getAllUsers ()
+    {
+        return ResponseEntity.ok(ApiResponse.ok(this.userService.getAllUsers())) ;
+
+    }
+
+    @PostMapping("/changeRolle")
+    public ResponseEntity<ApiResponse<?>> changeRole (
+            @RequestParam("userId") UUID userId
+    )
+    {
+        User user =this.userService.changeRolle(userId) ;
+        return ResponseEntity.ok(ApiResponse.ok(user)) ;
+    }
 
 
 
