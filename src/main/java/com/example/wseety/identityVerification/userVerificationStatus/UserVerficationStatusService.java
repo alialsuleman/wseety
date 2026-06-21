@@ -1,10 +1,13 @@
 package com.example.wseety.identityVerification.userVerificationStatus;
 
 
+import com.example.wseety.identityVerification.admin.UserVerificationStatusDto;
 import com.example.wseety.identityVerification.verificationDocument.entity.DocumentType;
 import com.example.wseety.identityVerification.verificationDocument.entity.VerificationDocument;
 import com.example.wseety.identityVerification.verificationDocument.entity.VerificationDocumentRepository;
 import com.example.wseety.identityVerification.verificationDocument.entity.VerificationStatus;
+import com.example.wseety.user.UserRepository;
+import com.example.wseety.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +23,8 @@ public class UserVerficationStatusService {
 
     final private UserVerificationStatusRepository userVerificationStatusRepository ;
     final private VerificationDocumentRepository verificationDocumentRepository ;
+    final private UserRepository userRepository ;
+
 
     public void updateStatus(long documentId  , VerificationStatus verificationStatus) {
 
@@ -63,9 +68,29 @@ public class UserVerficationStatusService {
 
     }
 
-    public List<UserVerificationStatus> getReadyToReview(int page, int size) {
+    public List<UserVerificationStatusDto> getReadyToReview(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return userVerificationStatusRepository.findByReadyToReviewTrueOrderByTimestampAsc(pageable);
+
+
+        List<UserVerificationStatus> statuses =
+                userVerificationStatusRepository
+                        .findByReadyToReviewTrueOrderByTimestampAsc(pageable);
+
+        return statuses.stream()
+                .map(status -> {
+
+                    User user = userRepository.findById(status.getUserId())
+                            .orElseThrow();
+
+                    return new UserVerificationStatusDto(
+                            status,
+                            user.getFirstname(),
+                            user.getLastname(),
+                            user.getEmail()
+                    );
+                })
+                .toList();
+
     }
 
 }
