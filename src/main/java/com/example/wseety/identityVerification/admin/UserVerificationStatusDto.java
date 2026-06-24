@@ -8,12 +8,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Getter
 public class UserVerificationStatusDto {
 
 
+    private final UUID id ;
     private final String firstname;
     private final String lastname;
 
@@ -28,7 +30,7 @@ public class UserVerificationStatusDto {
     private final LocalDateTime timestamp;
 
     public UserVerificationStatusDto(UserVerificationStatus entity, String firstname , String lastname, String email) {
-
+        this.id =  entity.getUserId();
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
