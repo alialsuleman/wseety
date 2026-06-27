@@ -13,4 +13,8 @@ public class CreateStoreDto {
 
     String description ;
 
+    @NotBlank
+    @NotNull
+    Long categoryId ;
+
 }

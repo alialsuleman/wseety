@@ -28,8 +28,11 @@ public class StoreControllar {
     )
     {
         User user = ((User) userDetails);
-        this.storeService.createSotre(user.getId() , createStoreDto);
-        return ResponseEntity.ok(ApiResponse.ok("The store has been successfully created.")) ;
+     ;
+        return ResponseEntity.ok(ApiResponse.ok(
+                "The store has been successfully created."
+                , this.storeService.createSotre(user.getId() , createStoreDto)
+        )) ;
     }
 
     @PostMapping("/image")

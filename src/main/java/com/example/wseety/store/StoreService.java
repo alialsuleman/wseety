@@ -1,5 +1,8 @@
 package com.example.wseety.store;
 
+import com.example.wseety.category.Category;
+import com.example.wseety.category.CategoryRepository;
+import com.example.wseety.category.CategoryService;
 import com.example.wseety.exceptionHandler.exception.ForbiddenException;
 import com.example.wseety.exceptionHandler.exception.NotFoundException;
 import com.example.wseety.file.FileStorageService;
@@ -30,12 +33,20 @@ public class StoreService {
 
     private final FileStorageService fileStorageService ;
 
-    public void createSotre (UUID userId , CreateStoreDto createStoreDto)
+    private final CategoryService categoryService ;
+
+    public Store createSotre (UUID userId , CreateStoreDto createStoreDto)
     {
         boolean isVerviad =  this.userVerficationStatusService.getUserDocStatus(userId) ;
+        Category category =  this.categoryService.findById(createStoreDto.getCategoryId());
+
         if (!isVerviad) throw new ForbiddenException("User identity not verified. Please complete identity verification before creating a store.");
-        Store store =  new Store(userId , createStoreDto.getName() , createStoreDto.getDescription()) ;
+        Store store =  new Store(userId , createStoreDto.getName() , createStoreDto.getDescription(), category) ;
         this.storeRepository.save(store) ;
+
+        category.addStore(store);
+        this.categoryService.save(category) ;
+        return store  ;
     }
 
 

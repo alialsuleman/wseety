@@ -1,13 +1,11 @@
 package com.example.wseety.store;
 
 
+import com.example.wseety.category.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -19,11 +17,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Store {
 
-    public Store (UUID userId, String name , String description)
+    public Store (UUID userId, String name , String description , Category category)
     {
         this.userId = userId ;
         this.name =  name ;
         this.description = description ;
+        this.category =  category ;
     }
 
     @Id
@@ -60,6 +59,14 @@ public class Store {
 
     @Column(name = "image_path")
     private String imagePath;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Category category;
+
 
     public String getStoreId ()
     {
