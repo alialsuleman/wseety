@@ -131,7 +131,7 @@ public class UserService {
 
     public void changeAccountType (User user, ChangeAccountTypeRequest changeAccountTypeRequest)
     {
-        if (changeAccountTypeRequest.getAcountType() ==  AcountType.USER)
+        if (user.getAcountType() !=  AcountType.NOT_SELECTED)
             throw new BadRequestException("It is not possible to change the account type right now; please contact support.");
         user.setAcountType(changeAccountTypeRequest.getAcountType());
         repository.save (user);

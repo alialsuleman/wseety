@@ -58,7 +58,7 @@ public class User implements UserDetails {
     private String internationalPhoneNumber ;
 
     @Builder.Default()
-    private AcountType acountType = AcountType.USER;
+    private AcountType acountType = AcountType.NOT_SELECTED;
 
 
     @Builder.Default()
