@@ -26,7 +26,8 @@ public class UserVerficationStatusService {
     final private UserRepository userRepository ;
 
 
-    public void updateStatus(long documentId  , VerificationStatus verificationStatus) {
+    public void updateStatus( long documentId  , VerificationStatus verificationStatus) {
+
 
         VerificationDocument doc = verificationDocumentRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
@@ -38,6 +39,7 @@ public class UserVerficationStatusService {
                 this.userVerificationStatusRepository.findByUserId(doc.getUserId())
                         .orElse(new UserVerificationStatus(doc.getUserId()));
 
+        User user = userRepository.findById(doc.getUserId()).get() ;
 
         switch (doc.getDocumentType()) {
             case NATIONAL_ID_FRONT:
@@ -52,7 +54,8 @@ public class UserVerficationStatusService {
             default:
                 throw new IllegalArgumentException("Unknown document type: " + doc.getDocumentType());
         }
-
+        user.setIdentityVerified(userVerificationStatus.isVerified());
+        userRepository.save(user) ;
         this.userVerificationStatusRepository.save(userVerificationStatus);
     }
 

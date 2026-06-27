@@ -56,6 +56,7 @@ public class AdminIdentityVerificationController {
             @PathVariable Long documentId,
             @RequestParam VerificationStatus status  // APPROVED or REJECTED
     ) {
+
         userVerficationStatusService.updateStatus(documentId, status);
 
         return ResponseEntity.ok(ApiResponse.ok("Done !."));

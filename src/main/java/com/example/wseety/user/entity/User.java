@@ -57,6 +57,12 @@ public class User implements UserDetails {
     private String countryCode ;
     private String internationalPhoneNumber ;
 
+    @Builder.Default()
+    private AcountType acountType = AcountType.NOT_SELECTED;
+
+
+    @Builder.Default()
+    boolean identityVerified  =  false ;
     // ─────────────────────────────────────────────
     //  Relations
     // ─────────────────────────────────────────────

@@ -4,6 +4,7 @@ import com.example.wseety.ApiResponse;
 import com.example.wseety.user.dto.AddPhoneNumberRequest;
 import com.example.wseety.user.dto.ChangePasswordRequest;
 import com.example.wseety.user.entity.User;
+import com.example.wseety.user.entity.UserInfoDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -53,6 +56,18 @@ public class UserController {
         User user = ((User) userDetails);
         this.userService.updateUserImage(user , file);
         return ResponseEntity.ok(ApiResponse.ok("The user image has been successfully updated.")) ;
+    }
+
+
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<?>> getStatus (
+            @AuthenticationPrincipal UserDetails userDetails
+    )
+    {
+        User user = ((User) userDetails);
+        return ResponseEntity.ok(ApiResponse.ok(UserInfoDto.from(user))) ;
+
     }
 
 
