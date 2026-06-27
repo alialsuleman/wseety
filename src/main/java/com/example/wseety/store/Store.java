@@ -2,6 +2,7 @@ package com.example.wseety.store;
 
 
 import com.example.wseety.category.Category;
+import com.example.wseety.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,9 +18,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Store {
 
-    public Store (UUID userId, String name , String description , Category category)
+    public Store (User user, String name , String description , Category category)
     {
-        this.userId = userId ;
+        this.user = user ;
         this.name =  name ;
         this.description = description ;
         this.category =  category ;
@@ -39,7 +40,9 @@ public class Store {
 
 
 
-    private UUID userId ;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
     @Builder.Default
     private long numberOfProducts = 0  ;

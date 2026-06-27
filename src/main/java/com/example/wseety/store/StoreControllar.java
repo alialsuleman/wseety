@@ -31,7 +31,21 @@ public class StoreControllar {
      ;
         return ResponseEntity.ok(ApiResponse.ok(
                 "The store has been successfully created."
-                , this.storeService.createSotre(user.getId() , createStoreDto)
+                , StoreMapper.toDto(this.storeService.createSotre(user , createStoreDto))
+        )) ;
+    }
+
+    @GetMapping("/mystore")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<?>> getMyStoreData(
+            @AuthenticationPrincipal UserDetails userDetails
+    )
+    {
+        User user = ((User) userDetails);
+
+        return ResponseEntity.ok(ApiResponse.ok(
+                "The store has been successfully created."
+                , StoreMapper.toDto(this.storeService.getMyStore(user ))
         )) ;
     }
 
