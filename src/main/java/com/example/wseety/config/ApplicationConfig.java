@@ -51,12 +51,17 @@ public class ApplicationConfig {
 
       if (repo.count() == 0) {
         repo.saveAll(List.of(
-                new Category("ELECTRONICS", "الكترونيات", "Electronics"),
-                new Category("GAMES_SUBSCRIPTIONS", "العاب اشتراكات", "Games & Subscriptions"),
-                new Category("SOFTWARE", "برامج", "Software"),
-                new Category("CLOTHING", "ملابس", "Clothing"),
-                new Category("PHONES", "هواتف", "Phones"),
-                new Category("OTHER", "اخرى", "Other")
+                new Category("DIGITAL_CARDS", "بطاقات رقمية", "Digital Cards"),
+                new Category("GAMES_CREDIT", "شحن ألعاب والرصيد", "Games & Credit Top-up"),
+                new Category("PHONES_ACCESSORIES", "هواتف واكسسوارات", "Phones & Accessories"),
+                new Category("COMPUTERS", "حواسيب", "Computers"),
+                new Category("WASITI_MARKET", "وسيطي ماركت", "Wasiti Market"),
+                new Category("CLOTHING_ACCESSORIES", "ملابس واكسسوارات", "Clothing & Accessories"),
+                new Category("GLOBAL_BRANDS", "براندات عالمية", "Global Brands"),
+                new Category("LOCAL_BRANDS", "براندات محلية", "Local Brands"),
+                new Category("GIFTS", "هدايا", "Gifts"),
+                new Category("GLOBAL_STORE", "المتجر العالمي", "Global Store"),
+                new Category("RESTAURANTS", "مطاعم", "Restaurants")
         ));
       }
     };
