@@ -13,11 +13,14 @@ import com.example.wseety.store.Store;
 import com.example.wseety.token.Token;
 import com.example.wseety.token.TokenRepository;
 import com.example.wseety.user.dto.AddPhoneNumberRequest;
+import com.example.wseety.user.dto.ChangeAccountTypeRequest;
 import com.example.wseety.user.dto.ChangePasswordRequest;
+import com.example.wseety.user.entity.AcountType;
 import com.example.wseety.user.entity.Role;
 import com.example.wseety.user.entity.User;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -123,6 +127,16 @@ public class UserService {
         user.setImagePath(null);
         this.repository.save(user) ;
     }
+
+
+    public void changeAccountType (User user, ChangeAccountTypeRequest changeAccountTypeRequest)
+    {
+        if (changeAccountTypeRequest.getAcountType() ==  AcountType.USER)
+            throw new BadRequestException("It is not possible to change the account type right now; please contact support.");
+        user.setAcountType(changeAccountTypeRequest.getAcountType());
+        repository.save (user);
+    }
+
 
 
     // admin section ...

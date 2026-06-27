@@ -1,4 +1,7 @@
-package com.example.wseety.user.entity;
+package com.example.wseety.user.dto;
+import com.example.wseety.user.entity.AcountType;
+import com.example.wseety.user.entity.Role;
+import com.example.wseety.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

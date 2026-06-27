@@ -2,9 +2,10 @@ package com.example.wseety.user ;
 
 import com.example.wseety.ApiResponse;
 import com.example.wseety.user.dto.AddPhoneNumberRequest;
+import com.example.wseety.user.dto.ChangeAccountTypeRequest;
 import com.example.wseety.user.dto.ChangePasswordRequest;
 import com.example.wseety.user.entity.User;
-import com.example.wseety.user.entity.UserInfoDto;
+import com.example.wseety.user.dto.UserInfoDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -15,8 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 
@@ -68,6 +67,20 @@ public class UserController {
         User user = ((User) userDetails);
         return ResponseEntity.ok(ApiResponse.ok(UserInfoDto.from(user))) ;
 
+    }
+
+
+
+    @PostMapping("/changeaccounttype")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<?>> changeAccountType (
+            @AuthenticationPrincipal UserDetails userDetails ,
+            @Valid @RequestBody ChangeAccountTypeRequest changeAccountTypeRequest
+            )
+    {
+        User user = ((User) userDetails);
+        userService.changeAccountType(user ,changeAccountTypeRequest);
+        return ResponseEntity.ok(ApiResponse.ok(null)) ;
     }
 
 
